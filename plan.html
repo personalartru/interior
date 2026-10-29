@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Квартира Осипенко — обмерный план</title>
+<style>
+  :root{
+    --bg:#f2eee6; --paper:#fffdf8; --ink:#26231f; --muted:#857d71;
+    --line:#e5ded1; --accent:#b4552f; --green:#3f8f5a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #faf7f0 0%, rgba(250,247,240,0) 60%),
+      var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .topbar{
+    display:flex; justify-content:space-between; align-items:flex-end; gap:18px;
+    padding:22px 28px 16px;
+  }
+  .brand h1{margin:0; font-size:19px; font-weight:650; letter-spacing:-.015em}
+  .brand p{margin:4px 0 0; font-size:12.5px; color:var(--muted)}
+  .top-meta{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+  .pill{
+    font-size:11.5px; color:#5f584e; background:#fbf7ef; border:1px solid var(--line);
+    border-radius:999px; padding:6px 11px; white-space:nowrap;
+  }
+  a.pill{text-decoration:none; color:var(--accent); border-color:#e2cec0; transition:border-color .15s, background .15s}
+  a.pill:hover{border-color:var(--accent); background:#fff9f2}
+  .layout{
+    display:grid; grid-template-columns:minmax(0,1fr) 372px; gap:18px;
+    padding:0 28px 28px; align-items:start;
+  }
+  .stage{
+    background:var(--paper); border:1px solid var(--line); border-radius:18px;
+    padding:14px 14px 8px; box-shadow:0 18px 44px -34px rgba(48,36,24,.55);
+  }
+  .stage-head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px 12px;
+    padding:2px 6px 10px; flex-wrap:wrap;
+  }
+  .stage-title{
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+    display:flex; align-items:center; gap:8px; white-space:nowrap; flex:none;
+  }
+  .stage-title::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--accent)}
+  .controls{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end}
+  .btn{
+    appearance:none; border:1px solid var(--line); background:#fff; color:var(--ink);
+    border-radius:10px; padding:7px 10px; font-size:12.5px; font-family:inherit;
+    display:inline-flex; align-items:center; gap:7px; cursor:pointer;
+    transition:border-color .15s, background .15s, transform .15s;
+  }
+  .btn:hover{border-color:#d5c9b4; transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn .dot{width:7px; height:7px; border-radius:50%; background:var(--accent); transition:background .15s}
+  .btn[aria-pressed="false"]{color:#8b8376}
+  .btn[aria-pressed="false"] .dot{background:#cec4b4}
+  .plan-wrap{background:#fff; border-radius:12px; overflow:hidden; border:1px solid #f0eade}
+  svg#plan{display:block; width:100%; height:auto; touch-action:manipulation}
+  .legend{
+    display:flex; flex-wrap:wrap; gap:14px 20px; padding:12px 8px 8px;
+    font-size:11.5px; color:#6b6459;
+  }
+  .legend .it{display:inline-flex; align-items:center; gap:7px}
+  .chip{width:14px; height:14px; border-radius:4px; flex:none}
+  .chip.wall{background:#2b2823}
+  .chip.new{background:var(--green)}
+  .legend svg{flex:none}
+  .side{display:flex; flex-direction:column; gap:14px}
+  .card{
+    background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px 16px 14px;
+    box-shadow:0 14px 34px -32px rgba(48,36,24,.5);
+  }
+  .card h2{
+    margin:0 0 10px; font-size:10.5px; font-weight:650; letter-spacing:.13em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .rooms{list-style:none; margin:0; padding:0}
+  .room-row{
+    display:grid; grid-template-columns:11px minmax(0,1fr) auto; gap:10px; align-items:center;
+    padding:7px 8px; border-radius:9px; cursor:pointer; transition:background .13s, box-shadow .13s;
+  }
+  .room-row:hover{background:#f8f3e9}
+  .room-row.active{background:#f3ead9; box-shadow:inset 0 0 0 1px #e4d4b7}
+  .room-row .sw{width:11px; height:11px; border-radius:3px}
+  .room-row .nm{font-size:13px; line-height:1.15}
+  .room-row .rl{font-size:11px; color:var(--muted); margin-top:2px}
+  .room-row .ar{font-size:12.5px; font-variant-numeric:tabular-nums; color:#4a443b}
+  .total{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-top:10px; padding-top:12px; border-top:1px solid var(--line);
+  }
+  .total span{font-size:12px; color:var(--muted)}
+  .total b{font-size:23px; font-weight:650; letter-spacing:-.02em}
+  .bar{display:flex; height:9px; border-radius:5px; overflow:hidden; margin-top:12px; gap:1px}
+  .bar i{display:block; height:100%}
+  .detail-name{font-size:24px; font-weight:650; letter-spacing:-.02em; line-height:1.1}
+  .detail-meta{font-size:12px; color:var(--muted); margin-top:4px}
+  .detail-note{font-size:12.5px; line-height:1.5; color:#4e473d; margin:10px 0 0}
+  .disc{font-size:11.5px; line-height:1.55; color:#7d7569; margin:0}
+  .disc b{color:#5a534a; font-weight:600}
+  @media (max-width:1080px){
+    .layout{grid-template-columns:1fr}
+    .side{position:static}
+  }
+  @media (max-width:560px){
+    .topbar{padding:16px 16px 10px; align-items:flex-start; flex-direction:column}
+    .layout{padding:0 16px 18px}
+  }
+  @media print{
+    .top-meta,.controls{display:none}
+    .layout{grid-template-columns:1fr}
+    body{background:#fff}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <h1>Квартира по обмерному плану</h1>
+    <p>Осипенко · 2 комнаты, кухня, гостиная, 2 лоджии, санузел</p>
+  </div>
+  <div class="top-meta">
+    <a class="pill" href="index.html">← Все виды</a>
+    <span class="pill">≈ 60,2 м² по помещениям</span>
+    <span class="pill">Размеры в мм</span>
+    <span class="pill">8 помещений</span>
+  </div>
+</header>
+
+<div class="layout">
+  <section class="stage">
+    <div class="stage-head">
+      <div class="stage-title">Обмерный план</div>
+      <div class="controls">
+        <button class="btn" id="btnDims" aria-pressed="true"><span class="dot"></span>Размеры</button>
+        <button class="btn" id="btnNotes" aria-pressed="true"><span class="dot"></span>Пометки</button>
+        <button class="btn" id="btnSvg">Скачать SVG</button>
+      </div>
+    </div>
+
+    <div class="plan-wrap">
+      <svg id="plan" viewBox="-1150 -1040 13450 10040" role="img" aria-label="План квартиры с помещениями, дверями и окнами">
+        <defs>
+          <filter id="sh" x="-8%" y="-8%" width="116%" height="124%">
+            <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#3a2c1e" flood-opacity="0.18"/>
+          </filter>
+          <style>
+            .wall{fill:#2c2925}
+            .wall.ext{fill:#252220}
+            .wall.new{fill:#3f8f5a}
+            .floor{stroke:rgba(60,50,35,.055);stroke-width:8}
+            .room-hit{cursor:pointer}
+            .room-hit.is-hot{filter:brightness(.965)}
+            .room-hit.is-sel{stroke:#b4552f;stroke-width:46;stroke-opacity:.85}
+            .rname{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:196px;font-weight:650;fill:#2b2822;paint-order:stroke;stroke:#fffdf8;stroke-width:64;stroke-linejoin:round;letter-spacing:.01em}
+            .rarea{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:222px;font-weight:600;fill:#3d372e;paint-order:stroke;stroke:#fffdf8;stroke-width:56}
+            .rdim{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:128px;fill:#8b8174;paint-order:stroke;stroke:#fffdf8;stroke-width:44;letter-spacing:.02em}
+            .rname.is-hot,.rname.is-sel{fill:#b4552f}
+            .rsub{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:150px;font-weight:600;fill:#9a9183;letter-spacing:.18em;paint-order:stroke;stroke:#fffdf8;stroke-width:40}
+            .win-glass{fill:#fdfeff}
+            .win line{stroke:#6f93a8;stroke-width:22}
+            .win .mull{stroke:#6f93a8;stroke-width:18}
+            .thr{fill:#f7f2e8}
+            .door .leaf{stroke:#8b8274;stroke-width:20;stroke-linecap:round}
+            .door .arc{fill:none;stroke:#a49b8b;stroke-width:16;opacity:.95}
+            .door .jamb{stroke:#8b8274;stroke-width:26;stroke-linecap:round}
+            .dim line{stroke:#c1b6a3;stroke-width:9}
+            .dim .tick{stroke:#b3a894;stroke-width:13}
+            .dim text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:160px;fill:#8e8476}
+            .xmark{stroke:#a4503c;stroke-width:32;stroke-dasharray:110 70;opacity:.55}
+            .scale line{stroke:#6f675b;stroke-width:14}
+            .scale text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:125px;fill:#8b8174}
+            .entry{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:150px;fill:#b4552f;letter-spacing:.08em}
+            #plan.no-dims #dims{display:none}
+            #plan.no-notes #notes{display:none}
+          </style>
+        </defs>
+        <g id="floors"></g>
+        <g id="walls" filter="url(#sh)"></g>
+        <g id="openingFills"></g>
+        <g id="windows"></g>
+        <g id="doors"></g>
+        <g id="zones"></g>
+        <g id="labels"></g>
+        <g id="dims"></g>
+        <g id="extras"></g>
+      </svg>
+    </div>
+
+    <div class="legend">
+      <span class="it"><span class="chip wall"></span>несущие и существующие стены</span>
+      <span class="it"><span class="chip new"></span>новые перегородки (по плану)</span>
+      <span class="it">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 15V4a11 11 0 0 0 11 11" fill="none" stroke="#a49b8b" stroke-width="1.6"/><path d="M3 4h11" fill="none" stroke="#8b8274" stroke-width="1.6"/></svg>
+        двери с направлением открывания
+      </span>
+      <span class="it">
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="1" y="6" width="18" height="8" fill="#fff" stroke="#6f93a8" stroke-width="1.2"/><path d="M1 10h18" stroke="#6f93a8" stroke-width="1.2"/></svg>
+        окна
+      </span>
+      <span class="it">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 2l14 14M16 2L2 16" stroke="#a4503c" stroke-width="1.7" opacity=".7" stroke-dasharray="3 2"/></svg>
+        крест — разметка исходного плана
+      </span>
+    </div>
+  </section>
+
+  <aside class="side">
+    <section class="card">
+      <h2>Помещения</h2>
+      <ul class="rooms" id="roomList"></ul>
+      <div class="total"><span>Итого по помещениям</span><b>60,2 м²</b></div>
+      <div class="bar" id="bar"></div>
+    </section>
+
+    <section class="card" id="detail">
+      <h2>Паспорт квартиры</h2>
+      <div class="detail-name" id="dName">Квартира целиком</div>
+      <div class="detail-meta" id="dMeta">2 комнаты · кухня · гостиная · 2 лоджии</div>
+      <p class="detail-note" id="dNote">Суммарная площадь помещений — 60,2 м² без площади стен. Общая ширина по фасаду — 11 931 мм, глубина — 7 739 мм. Нажмите на помещение, чтобы увидеть его параметры.</p>
+    </section>
+
+    <section class="card">
+      <h2>Как читать план</h2>
+      <p class="disc">
+        <b>Функции помещений</b> на исходном плане не подписаны; названия «Детская» и «Спальня» — условные.<br>
+        <b>Зелёные участки</b> — новые перегородки, <b>крест</b> — разметка из исходного файла (вероятно, зона демонтажа; стоит уточнить у автора плана).<br>
+        Все размеры — в миллиметрах, площади — в м², без площади стен.
+      </p>
+    </section>
+  </aside>
+</div>
+
+<script>
+(function(){
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.getElementById('plan');
+
+  const rooms = [
+    {id:'r1', name:'Кухня', role:'кухня', area:6.9, dims:'2 181 × 3 090', color:'#f3e2c8',
+     poly:[[400,400],[2581,400],[2581,3489],[150,3489],[150,2734],[400,2734]], label:[1400,1900],
+     note:'Г-образная: внизу расширяется до 2 431 мм. Окно 1 384 мм, вход из прихожей — проём 851 мм.'},
+    {id:'r2', name:'Детская', role:'детская', area:9.8, dims:'2 466 × 3 976', color:'#e8e1f1',
+     poly:[[2771,400],[5237,400],[5237,4376],[2771,4376]], label:[4000,2200],
+     note:'Дверь 800 мм из прихожей, окно 1 405 мм. Самая глубокая комната — 3 976 мм.'},
+    {id:'r3', name:'Спальня', role:'спальня', area:9.2, dims:'3 060 × 2 995', color:'#dde9f1',
+     poly:[[8472,1800],[11531,1800],[11531,4794],[8472,4794]], label:[10000,3200],
+     note:'Вход — двустворчатая дверь 720 мм из гостиной. Балконный блок в лоджию: дверь 770 мм и окно 1 354 мм.'},
+    {id:'log1', name:'Лоджия 1', role:'летнее помещение', area:3.8, dims:'2 672 × 1 410', color:'#f8eccd',
+     poly:[[5537,70],[8208,70],[8208,1480],[5537,1480]], label:[6870,700],
+     note:'Балконный блок в гостиную: дверь 770 мм и окно 1 354 мм. Остекление по фасаду — 2 500 мм.'},
+    {id:'liv', name:'Гостиная', role:'общая зона', area:16.8, dims:'5 540 × 3 035', color:'#e5eee0',
+     poly:[[5337,1800],[8372,1800],[8372,7339],[5337,7339]], label:[6855,3950],
+     note:'Ядро квартиры: с севера — лоджия, с юга — зона 3 035 × 1 963. Проём 800 мм в прихожую.'},
+    {id:'log2', name:'Лоджия 2', role:'летнее помещение', area:4.5, dims:'3 223 × 1 410', color:'#e9e9ef',
+     poly:[[8308,70],[11531,70],[11531,1480],[8308,1480]], label:[9900,700],
+     note:'Остекление по фасаду 2 793 мм. Доступ из комнаты 3 через балконный блок: дверь 770 мм и окно 1 354 мм.'},
+    {id:'bath', name:'Санузел', role:'мокрая зона', area:3.4, dims:'1 502 × 2 287', color:'#d8ebee',
+     poly:[[129,3589],[1631,3589],[1631,5876],[129,5876]], label:[880,4680],
+     note:'Дверь 690 мм открывается в прихожую. Перегородки отмечены зелёным как новые.'},
+    {id:'hall', name:'Прихожая', role:'входная зона', area:5.8, dims:'', color:'#efe9dd',
+     poly:[[1731,3589],[1757,3589],[1757,3489],[2581,3489],[2581,4617],[2771,4617],[2771,4376],[3574,4376],[3574,4476],[5237,4476],[5237,4577],[5337,4577],[5337,5377],[5237,5377],[5237,5876],[2771,5876],[2771,5516],[2581,5516],[2581,5876],[1731,5876]], label:[2950,5050],
+     note:'Входная дверь 800 мм, проём 800 мм в гостиную, двери в кухню, комнату 2 и в санузел.'}
+  ];
+
+  const walls = [
+    [0,0,400,2734,'ext'],
+    [0,0,672,400,'ext'],
+    [2056,0,1242,400,'ext'],
+    [4703,0,534,400,'ext'],
+    [0,2734,150,855,'ext'],
+    [0,3589,129,2287,'ext'],
+    [5237,0,318,70,'ext'],
+    [8054,0,354,70,'ext'],
+    [11201,0,730,70,'ext'],
+    [11531,0,400,1480,'ext'],
+    [11531,1800,400,3243,'ext'],
+    [8472,4794,3459,249,'ext'],
+    [5237,7339,3235,400,'ext'],
+    [0,5876,3091,100,'ext'],
+    [3891,5876,1346,100,'ext'],
+    [129,3489,1628,100,'int'],
+    [2556,3489,25,100,'int'],
+    [1631,3589,100,1028,'int'],
+    [1631,3873,100,520,'new'],
+    [1631,5391,100,585,'int'],
+    [2581,400,190,4217,'int'],
+    [2581,5516,190,360,'int'],
+    [3574,4376,1663,100,'new'],
+    [5237,0,300,1496,'int'],
+    [5237,1480,100,3097,'int'],
+    [5237,5377,100,2362,'int'],
+    [5337,1480,476,320,'int'],
+    [7915,1480,1036,320,'int'],
+    [11074,1480,857,320,'int'],
+    [8372,1800,100,898,'int'],
+    [8372,3498,100,4241,'int'],
+    [8208,70,100,1410,'int']
+  ];
+
+  const windows = [
+    {x1:672, x2:2056, y1:0, y2:400, mullions:1, w:1384},
+    {x1:3298, x2:4703, y1:0, y2:400, mullions:0, w:1405},
+    {x1:5555, x2:8055, y1:0, y2:70, mullions:3, w:2500},
+    {x1:8408, x2:11201, y1:0, y2:70, mullions:3, w:2793},
+    {x1:6562, x2:7916, y1:1480, y2:1800, mullions:0, w:1354, inner:true},
+    {x1:9720, x2:11074, y1:1480, y2:1800, mullions:0, w:1354, inner:true}
+  ];
+
+  const doors = [
+    {id:'entrance', gap:[3091,5876,800,100], thr:true, hinge:[3852,5976], other:[3132,5976], leaf:[3852,6696], note:''},
+    {id:'bath', gap:[1616,4617,115,774], thr:true, hinge:[1731,5350], other:[1731,4660], leaf:[2421,5350]},
+    {id:'r1', gap:[1757,3489,824,100], thr:true, hinge:[2517,3589], other:[1797,3589], leaf:[2517,4309]},
+    {id:'r2', gap:[2771,4376,803,100], thr:true, hinge:[2814,4376], other:[3534,4376], leaf:[2814,3656]},
+    {id:'loggia1', gap:[5813,1480,749,320], thr:true, hinge:[5854,1800], other:[6543,1800], leaf:[5854,2490]},
+    {id:'loggia2', gap:[8951,1480,769,320], thr:true, hinge:[8992,1800], other:[9682,1800], leaf:[8992,2490]},
+    {id:'r3a', gap:[8372,2737,100,720], thr:true, hinge:[8472,2737], other:[8472,3097], leaf:[8832,2737]},
+    {id:'r3b', hinge:[8472,3457], other:[8472,3097], leaf:[8832,3457]}
+  ];
+
+  // ---------- helpers ----------
+  function mk(tag, attrs, parent){
+    const el = document.createElementNS(NS, tag);
+    if (attrs) for (const k in attrs) el.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(el);
+    return el;
+  }
+  function group(id){ return document.getElementById(id); }
+
+  const gFloors = group('floors'), gWalls = group('walls'), gFills = group('openingFills'),
+        gWin = group('windows'), gDoors = group('doors'), gZones = group('zones'),
+        gLabels = group('labels'), gDims = group('dims'), gExtras = group('extras');
+
+  // ---------- floors ----------
+  const roomEls = {};
+  rooms.forEach(r=>{
+    if (!r.poly) return;
+    const g = mk('g', {'data-id':r.id}, gFloors);
+    const p = mk('polygon', {
+      points: r.poly.map(pt=>pt.join(',')).join(' '),
+      fill: r.color, class:'floor room-hit', 'data-id':r.id
+    }, g);
+    roomEls[r.id] = {floor:p};
+  });
+
+  // ---------- walls ----------
+  walls.forEach(w=>{
+    mk('rect', {x:w[0], y:w[1], width:w[2], height:w[3], class:'wall '+w[4]}, gWalls);
+  });
+
+  // ---------- opening fills ----------
+  function fillRect(x,y,w,h,cls){
+    mk('rect', {x:x, y:y, width:w, height:h, class:cls||'thr'}, gFills);
+  }
+  // door openings are filled from the doors array
+  // doorless opening between hall and living room
+  fillRect(5237,4577,100,800,'thr');
+
+  // ---------- windows ----------
+  windows.forEach(w=>{
+    const g = mk('g', {class:'win'}, gWin);
+    mk('rect', {x:w.x1, y:w.y1, width:w.x2-w.x1, height:w.y2-w.y1, class:'win-glass'}, g);
+    const inset = Math.min(70, (w.y2-w.y1)/3);
+    const mid = (w.y1+w.y2)/2;
+    [w.y1+inset, mid, w.y2-inset].forEach(yy=>{
+      mk('line', {x1:w.x1, y1:yy, x2:w.x2, y2:yy}, g);
+    });
+    mk('line', {x1:w.x1, y1:w.y1+8, x2:w.x1, y2:w.y2-8, class:'mull'}, g);
+    mk('line', {x1:w.x2, y1:w.y1+8, x2:w.x2, y2:w.y2-8, class:'mull'}, g);
+    const n = w.mullions || 0;
+    for (let i=1;i<=n;i++){
+      const xx = w.x1 + (w.x2-w.x1)*i/(n+1);
+      mk('line', {x1:xx, y1:w.y1+8, x2:xx, y2:w.y2-8, class:'mull'}, g);
+    }
+  });
+
+  // ---------- doors ----------
+  function doorSymbol(hinge, other, leaf){
+    const g = mk('g', {class:'door'}, gDoors);
+    mk('line', {x1:hinge[0], y1:hinge[1], x2:leaf[0], y2:leaf[1], class:'leaf'}, g);
+    const w = Math.hypot(other[0]-hinge[0], other[1]-hinge[1]);
+    const ax = other[0]-hinge[0], ay = other[1]-hinge[1];
+    const bx = leaf[0]-hinge[0], by = leaf[1]-hinge[1];
+    const sweep = ax*by - ay*bx > 0 ? 1 : 0;
+    const d = `M ${other[0]} ${other[1]} A ${w} ${w} 0 0 ${sweep} ${leaf[0]} ${leaf[1]}`;
+    mk('path', {d:d, class:'arc'}, g);
+    return g;
+  }
+  doors.forEach(d=>{
+    if (d.gap) fillRect(d.gap[0], d.gap[1], d.gap[2], d.gap[3], 'thr');
+    if (d.hinge) doorSymbol(d.hinge, d.other, d.leaf);
+  });
+  // jambs for the doorless opening hall ↔ living room
+  [[4577],[5377]].forEach(pt=>{
+    mk('line', {x1:5237, y1:pt[0], x2:5337, y2:pt[0], class:'jamb', stroke:'#8b8274', 'stroke-width':24}, gDoors);
+  });
+
+  // ---------- zones: annotation from the source plan ----------
+  const notesG = mk('g', {id:'notes'}, gZones);
+  mk('line', {x1:2772, y1:4476, x2:5238, y2:5876, class:'xmark'}, notesG);
+  mk('line', {x1:5238, y1:4476, x2:2772, y2:5876, class:'xmark'}, notesG);
+
+  // ---------- labels ----------
+  rooms.forEach(r=>{
+    const g = mk('g', {class:'rlabel', 'data-id':r.id, style:'cursor:pointer'}, gLabels);
+    const [cx, cy] = r.label;
+    const hasDims = !!r.dims;
+    const nameY = hasDims ? cy-150 : cy-70;
+    const areaY = hasDims ? cy+105 : cy+140;
+    const dimY  = hasDims ? cy+300 : cy+300;
+    mk('text', {x:cx, y:nameY, 'text-anchor':'middle', class:'rname', 'data-id':r.id}, g).textContent = r.name;
+    mk('text', {x:cx, y:areaY, 'text-anchor':'middle', class:'rarea', 'data-id':r.id}, g).textContent = r.area.toFixed(1).replace('.', ',') + ' м²';
+    if (hasDims) mk('text', {x:cx, y:dimY, 'text-anchor':'middle', class:'rdim', 'data-id':r.id}, g).textContent = r.dims;
+    roomEls[r.id] = roomEls[r.id] || {};
+    roomEls[r.id].label = g;
+  });
+
+  // ---------- dims ----------
+  function hDim(x1,x2,y,text,extY){
+    const g = mk('g', {class:'dim'}, gDims);
+    mk('line', {x1:x1, y1:y, x2:x2, y2:y}, g);
+    mk('line', {x1:x1, y1:y-70, x2:x1, y2:y+70, class:'tick'}, g);
+    mk('line', {x1:x2, y1:y-70, x2:x2, y2:y+70, class:'tick'}, g);
+    if (extY !== undefined && extY !== null){
+      mk('line', {x1:x1, y1:extY, x2:x1, y2:y, stroke:'#c1b6a3', 'stroke-width':7, opacity:'.6'}, g);
+      mk('line', {x1:x2, y1:extY, x2:x2, y2:y, stroke:'#c1b6a3', 'stroke-width':7, opacity:'.6'}, g);
+    }
+    mk('text', {x:(x1+x2)/2, y:y-95, 'text-anchor':'middle'}, g).textContent = text;
+  }
+  function vDim(y1,y2,x,text,extX){
+    const g = mk('g', {class:'dim'}, gDims);
+    mk('line', {x1:x, y1:y1, x2:x, y2:y2}, g);
+    mk('line', {x1:x-70, y1:y1, x2:x+70, y2:y1, class:'tick'}, g);
+    mk('line', {x1:x-70, y1:y2, x2:x+70, y2:y2, class:'tick'}, g);
+    if (extX !== undefined && extX !== null){
+      mk('line', {x1:extX, y1:y1, x2:x, y2:y1, stroke:'#c1b6a3', 'stroke-width':7, opacity:'.6'}, g);
+      mk('line', {x1:extX, y1:y2, x2:x, y2:y2, stroke:'#c1b6a3', 'stroke-width':7, opacity:'.6'}, g);
+    }
+    mk('text', {x:x-95, y:(y1+y2)/2, 'text-anchor':'middle', transform:`rotate(-90 ${x-95} ${(y1+y2)/2})`}, g).textContent = text;
+  }
+  hDim(0,11931,-700,'11 931',0);
+  hDim(400,2581,-285,'2 181',0);
+  hDim(2771,5237,-285,'2 466',0);
+  hDim(5537,8208,-285,'2 672',0);
+  hDim(8308,11531,-285,'3 223',0);
+  hDim(5337,8372,8060,'3 035',7739);
+  hDim(8472,11531,5250,'3 060',5043);
+  vDim(400,3489,-330,'3 090',0);
+  vDim(3589,5876,-330,'2 287',0);
+  vDim(0,7739,-900,'7 739',0);
+  vDim(1800,4794,12150,'2 995',11931);
+  vDim(5377,7339,5970,'1 963',5337);
+
+  // ---------- extras: scale bar + entrance ----------
+  const sb = mk('g', {class:'scale'}, gExtras);
+  mk('rect', {x:0, y:8580, width:1000, height:80, fill:'#3b372f'}, sb);
+  mk('rect', {x:1000, y:8580, width:1000, height:80, fill:'#fff', stroke:'#6f675b', 'stroke-width':12}, sb);
+  mk('rect', {x:2000, y:8580, width:1000, height:80, fill:'#3b372f'}, sb);
+  ['0','1','2','3 м'].forEach((t,i)=>{
+    mk('text', {x:i*1000, y:8790, 'text-anchor':i===3?'start':'middle'}, sb).textContent = t;
+  });
+  mk('text', {x:0, y:8470, class:'scale', fill:'#8b8174'}, sb).textContent = 'масштаб';
+  const en = mk('g', {}, gExtras);
+  mk('text', {x:3491, y:6960, 'text-anchor':'middle', class:'entry'}, en).textContent = 'ВХОД';
+  mk('line', {x1:3491, y1:6820, x2:3491, y2:6740, stroke:'#b4552f', 'stroke-width':18, opacity:'.8'}, en);
+  mk('path', {d:'M 3441 6780 L 3491 6720 L 3541 6780', fill:'none', stroke:'#b4552f', 'stroke-width':18, opacity:'.8'}, en);
+
+  // ---------- ui ----------
+  const list = document.getElementById('roomList');
+  const bar = document.getElementById('bar');
+  const dName = document.getElementById('dName'), dMeta = document.getElementById('dMeta'), dNote = document.getElementById('dNote');
+  const total = rooms.reduce((s,r)=>s+r.area,0);
+
+  rooms.forEach(r=>{
+    const li = document.createElement('li');
+    li.className = 'room-row';
+    li.dataset.id = r.id;
+    li.innerHTML = `<span class="sw" style="background:${r.color}"></span>
+      <span><span class="nm">${r.name}</span><span class="rl">${r.role}${r.dims ? ' · ' + r.dims : ''}</span></span>
+      <span class="ar">${r.area.toFixed(1).replace('.', ',')}</span>`;
+    li.addEventListener('click', ()=>select(r.id));
+    li.addEventListener('mouseenter', ()=>hover(r.id, true));
+    li.addEventListener('mouseleave', ()=>hover(r.id, false));
+    list.appendChild(li);
+    r.row = li;
+
+    const seg = document.createElement('i');
+    seg.style.background = r.color;
+    seg.style.flex = r.area + ' 1 0';
+    bar.appendChild(seg);
+  });
+  // fix room-row grid to 3 columns with name+role stacked
+  const st = document.createElement('style');
+  st.textContent = '.room-row .nm{display:block}.room-row .rl{display:block}';
+  document.head.appendChild(st);
+
+  let selected = null, hovered = null;
+  function paint(id, state){
+    const e = roomEls[id]; if (!e) return;
+    const hot = state === 'hot', sel = state === 'sel';
+    if (e.floor){
+      e.floor.classList.toggle('is-hot', hot);
+      e.floor.classList.toggle('is-sel', sel);
+    }
+    if (e.label){
+      e.label.querySelectorAll('.rname').forEach(t=>{
+        t.classList.toggle('is-hot', hot);
+        t.classList.toggle('is-sel', sel);
+      });
+    }
+  }
+  function hover(id, on){
+    if (selected === id && !on) return;
+    if (on){
+      hovered = id;
+      if (selected !== id) paint(id, 'hot');
+    } else {
+      if (hovered === id) hovered = null;
+      if (selected !== id) paint(id, null);
+    }
+  }
+  function select(id){
+    if (selected){
+      paint(selected, null);
+      const prev = rooms.find(r=>r.id===selected); if (prev && prev.row) prev.row.classList.remove('active');
+    }
+    if (selected === id){
+      selected = null;
+      resetDetail();
+      return;
+    }
+    selected = id;
+    paint(id, 'sel');
+    const r = rooms.find(x=>x.id===id);
+    if (r){
+      r.row.classList.add('active');
+      dName.textContent = r.name;
+      dMeta.textContent = `${r.role} · ${r.area.toFixed(1).replace('.', ',')} м²${r.dims ? ' · ' + r.dims + ' мм' : ''}`;
+      dNote.textContent = r.note;
+    }
+  }
+  function resetDetail(){
+    dName.textContent = 'Квартира целиком';
+    dMeta.textContent = '2 комнаты · кухня · гостиная · 2 лоджии';
+    dNote.textContent = 'Суммарная площадь помещений — 60,2 м² без площади стен. Общая ширина по фасаду — 11 931 мм, глубина — 7 739 мм. Нажмите на помещение, чтобы увидеть его параметры.';
+  }
+
+  // room interactions (floors + labels)
+  rooms.forEach(r=>{
+    const e = roomEls[r.id];
+    const nodes = [];
+    if (e.floor) nodes.push(e.floor);
+    if (e.label) nodes.push(e.label);
+    nodes.forEach(n=>{
+      n.addEventListener('click', ev=>{ ev.stopPropagation(); select(r.id); });
+      n.addEventListener('mouseenter', ()=>hover(r.id, true));
+      n.addEventListener('mouseleave', ()=>hover(r.id, false));
+    });
+  });
+  svg.addEventListener('click', ()=>{
+    if (selected){
+      const prev = rooms.find(r=>r.id===selected);
+      if (prev && prev.row) prev.row.classList.remove('active');
+      paint(selected, null);
+      selected = null;
+      resetDetail();
+    }
+  });
+
+  document.getElementById('btnDims').addEventListener('click', function(){
+    const on = this.getAttribute('aria-pressed') === 'true';
+    this.setAttribute('aria-pressed', String(!on));
+    svg.classList.toggle('no-dims', on);
+  });
+  document.getElementById('btnNotes').addEventListener('click', function(){
+    const on = this.getAttribute('aria-pressed') === 'true';
+    this.setAttribute('aria-pressed', String(!on));
+    svg.classList.toggle('no-notes', on);
+  });
+  document.getElementById('btnSvg').addEventListener('click', ()=>{
+    const clone = svg.cloneNode(true);
+    clone.setAttribute('xmlns', NS);
+    clone.setAttribute('width', '1380');
+    clone.setAttribute('height', '1010');
+    clone.setAttribute('style', 'background:#fffdf8');
+    const src = new XMLSerializer().serializeToString(clone);
+    const blob = new Blob([src], {type:'image/svg+xml;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'plan-kvartiry-osipenko.svg';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  });
+})();
+</script>
+</body>
+</html>
