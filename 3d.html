@@ -652,17 +652,22 @@
   function splashTexture(){
     return canvasTexture(1024, (g,S)=>{
       const cols = 4, rows = 8, tw = S/cols, th = S/rows;
-      g.fillStyle = '#cfc7b9'; g.fillRect(0,0,S,S);
+      g.fillStyle = '#bdb19d'; g.fillRect(0,0,S,S);
       for (let r=0;r<rows;r++){
         const off = (r % 2) ? tw/2 : 0;
         for (let c=-1;c<cols;c++){
           const x = c*tw + off, y = r*th;
-          g.fillStyle = '#f1ece4';
+          g.fillStyle = '#e5d9c6';
+          g.fillRect(x+3, y+3, tw-6, th-6);
+          const tone = Math.random()*2 - 1;
+          g.fillStyle = tone > 0
+            ? `rgba(255,247,232,${tone*0.10})`
+            : `rgba(120,100,76,${-tone*0.09})`;
           g.fillRect(x+3, y+3, tw-6, th-6);
           const grd = g.createLinearGradient(0, y, 0, y+th);
-          grd.addColorStop(0,'rgba(255,255,255,.4)');
-          grd.addColorStop(.55,'rgba(255,255,255,0)');
-          grd.addColorStop(1,'rgba(118,108,92,.08)');
+          grd.addColorStop(0,'rgba(255,252,244,.42)');
+          grd.addColorStop(.5,'rgba(255,255,255,0)');
+          grd.addColorStop(1,'rgba(104,88,66,.16)');
           g.fillStyle = grd; g.fillRect(x+3, y+3, tw-6, th-6);
         }
       }
