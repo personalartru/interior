@@ -43,7 +43,7 @@
     display:flex; align-items:center; gap:7px; margin-bottom:3px;
   }
   .brand .kicker::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--accent)}
-  .brand .kicker a{color:var(--accent); text-decoration:none; border-bottom:1px solid rgba(180,85,47,.3); padding-bottom:1px}
+  .brand .kicker a{color:var(--accent); text-decoration:none; border-bottom:1px solid rgba(180,85,47,.3); padding-bottom:1px; white-space:nowrap}
   .brand .kicker .sep{color:#c9bdac}
   .brand h1{margin:0; font-size:17px; font-weight:650; letter-spacing:-.015em; line-height:1.15; display:flex; align-items:center; gap:9px}
   .brand .area{
@@ -221,6 +221,7 @@
     .fin{width:276px; top:100px; max-height:calc(100% - 208px)}
   }
   @media (max-width:720px){
+    .brand .kicker .sep, .brand .kicker .ctx{display:none}
     .topbar{padding:12px 12px 0; gap:8px}
     .brand{padding:9px 12px 8px; border-radius:12px}
     .brand h1{font-size:15px}
@@ -262,7 +263,7 @@
   <div class="hud">
     <header class="topbar">
       <div class="brand">
-        <div class="kicker"><a href="index.html">← Все виды</a><span class="sep">·</span>3D-модель по обмерному плану</div>
+        <div class="kicker"><a href="index.html">← Все виды</a><span class="sep">·</span><span class="ctx">3D-модель по обмерному плану</span></div>
         <h1>Квартира Осипенко <span class="area">60,2 м²</span></h1>
         <p>2 комнаты, кухня, гостиная, 2 лоджии, санузел. <span class="opt">Высота стен 2,75 м, двери 2,05 м — приняты для 3D.</span></p>
       </div>
