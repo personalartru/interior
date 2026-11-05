@@ -147,7 +147,24 @@
     font-size:9.9px; line-height:1.45; color:#7d7466; border-top:1px solid var(--line);
     padding-top:8px; margin:11px 0 1px;
   }
-  .sw-lam{background:linear-gradient(135deg,#d9c09b,#c5a173 55%,#b8905f)}
+  .fin-num{
+    display:flex; justify-content:space-between; align-items:baseline; gap:8px;
+    font-size:10.6px; line-height:1.5; padding:1px 0;
+    border-bottom:1px dashed rgba(120,108,92,.18);
+  }
+  .fin-num em{font-style:normal; color:var(--muted); font-size:10px}
+  .fin-num b{font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap}
+  .fin-sum{
+    display:flex; justify-content:space-between; align-items:baseline; gap:8px;
+    font-size:11.2px; font-weight:650; line-height:1.5; padding:5px 0 1px;
+    border-bottom:1px solid var(--line);
+  }
+  .fin-sum span:last-child{font-variant-numeric:tabular-nums}
+  .fin-line{font-size:9.9px; line-height:1.45; color:#7d7466; margin:5px 0 6px}
+  .sw-lam{background:
+    repeating-linear-gradient(0deg,rgba(96,58,24,.30) 0 1px,transparent 1px 7px),
+    repeating-linear-gradient(90deg,rgba(96,58,24,.24) 0 1px,transparent 1px 14px),
+    linear-gradient(135deg,#e0bd90,#cfa477 55%,#c1935f)}
   .sw-por{background:radial-gradient(circle at 30% 25%,#e7dac7,#d3c2ab 70%)}
   .sw-log{background:linear-gradient(135deg,#dad5cb,#c9c2b5)}
   .sw-deco{background:radial-gradient(circle at 35% 30%,#e1d8cb,#cec2b1 75%)}
@@ -306,8 +323,21 @@
       <div class="fin-scroll">
         <div class="fin-group">
           <div class="fin-title">Полы</div>
-          <div class="fin-row"><span class="sw sw-lam"></span><div><b>Ламинат</b><small>светло-коричневый · все комнаты</small></div></div>
+          <div class="fin-row"><span class="sw sw-lam"></span><div><b>Ламинат AN 908</b><small>все помещения, кроме санузла и лоджий</small></div></div>
           <div class="fin-row"><span class="sw sw-por"></span><div><b>Керамогранит</b><small>бежевый · санузел</small></div></div>
+        </div>
+        <div class="fin-group">
+          <div class="fin-title">Раскладка ламината</div>
+          <div class="fin-row"><span class="sw sw-lam"></span><div><b>Anatolia Design Honey (AN 908)</b><small>33 класс · 8 мм · планка 1290×190 · 0,2451 м²</small></div></div>
+          <p class="fin-line">«Кирпичиком», сдвиг рядов 645 мм. Торец планок — к окну, значит планки идут перпендикулярно оконной стене. Одно направление на всю квартиру, подрезка у стен.</p>
+          <div class="fin-num"><span>Кухня <em>6,9 м²</em></span><b>31 планка</b></div>
+          <div class="fin-num"><span>Детская <em>9,8 м²</em></span><b>43 планки</b></div>
+          <div class="fin-num"><span>Спальня <em>9,2 м²</em></span><b>41 планка</b></div>
+          <div class="fin-num"><span>Гостиная <em>16,8 м²</em></span><b>74 планки</b></div>
+          <div class="fin-num"><span>Прихожая <em>5,8 м²</em></span><b>26 планок</b></div>
+          <div class="fin-sum"><span>Итого</span><span>48,5 м² · 215 планок</span></div>
+          <div class="fin-sum"><span>Закупка</span><span>27 упак. · 216 шт · 52,9 м²</span></div>
+          <p class="fin-line">В упаковке 8 планок = 1,9608 м². Нетто 198 планок; +7% на подрезку кирпичиком = 212; по помещениям в обрез — 215, поэтому берём 27 упаковок (запас 4,4 м²).</p>
         </div>
         <div class="fin-group">
           <div class="fin-title">Стены</div>
@@ -371,21 +401,21 @@
   if (!T){ fail('Не загрузилась библиотека 3D. Откройте файл заново.'); return; }
 
   const ROOMS = [
-    {id:'r1', name:'Кухня', role:'кухня', area:6.9, dims:'2 181 × 3 090', color:'#f3e2c8', floor:'wood',
+    {id:'r1', name:'Кухня', role:'кухня', area:6.9, dims:'2 181 × 3 090', color:'#f3e2c8', floor:'laminate',
      poly:[[400,400],[2581,400],[2581,3489],[150,3489],[150,2734],[400,2734]], label:[1400,1900]},
-    {id:'r2', name:'Детская', role:'детская', area:9.8, dims:'2 466 × 3 976', color:'#e8e1f1', floor:'wood',
+    {id:'r2', name:'Детская', role:'детская', area:9.8, dims:'2 466 × 3 976', color:'#e8e1f1', floor:'laminate',
      poly:[[2771,400],[5237,400],[5237,4376],[2771,4376]], label:[4000,2200]},
-    {id:'r3', name:'Спальня', role:'спальня', area:9.2, dims:'3 060 × 2 995', color:'#dde9f1', floor:'wood',
+    {id:'r3', name:'Спальня', role:'спальня', area:9.2, dims:'3 060 × 2 995', color:'#dde9f1', floor:'laminate',
      poly:[[8472,1800],[11531,1800],[11531,4794],[8472,4794]], label:[10000,3200]},
     {id:'log1', name:'Лоджия 1', role:'летнее помещение', area:3.8, dims:'2 672 × 1 410', color:'#f8eccd', floor:'concrete',
      poly:[[5537,70],[8208,70],[8208,1480],[5537,1480]], label:[6870,700]},
-    {id:'liv', name:'Гостиная', role:'общая зона', area:16.8, dims:'5 540 × 3 035', color:'#e5eee0', floor:'wood',
+    {id:'liv', name:'Гостиная', role:'общая зона', area:16.8, dims:'5 540 × 3 035', color:'#e5eee0', floor:'laminate',
      poly:[[5337,1800],[8372,1800],[8372,7339],[5337,7339]], label:[6855,3950]},
     {id:'log2', name:'Лоджия 2', role:'летнее помещение', area:4.5, dims:'3 223 × 1 410', color:'#e9e9ef', floor:'concrete',
      poly:[[8308,70],[11531,70],[11531,1480],[8308,1480]], label:[9900,700]},
     {id:'bath', name:'Санузел', role:'мокрая зона', area:3.4, dims:'1 502 × 2 287', color:'#d8ebee', floor:'porcelain',
      poly:[[129,3589],[1631,3589],[1631,5876],[129,5876]], label:[880,4680]},
-    {id:'hall', name:'Прихожая', role:'входная зона', area:5.8, dims:'', color:'#efe9dd', floor:'wood',
+    {id:'hall', name:'Прихожая', role:'входная зона', area:5.8, dims:'', color:'#efe9dd', floor:'laminate',
      poly:[[1731,3589],[1757,3589],[1757,3489],[2581,3489],[2581,4617],[2771,4617],[2771,4376],[3574,4376],[3574,4476],[5237,4476],[5237,4577],[5337,4577],[5337,5377],[5237,5377],[5237,5876],[2771,5876],[2771,5516],[2581,5516],[2581,5876],[1731,5876]], label:[2950,5050]}
   ];
 
@@ -424,14 +454,14 @@
   ];
 
   const FINISH = {
-    r1:  {walls:'deco', backsplash:true, ceil:'paint', short:'Ламинат · декоративка + фартук'},
-    r2:  {walls:'paper', ceil:'white', short:'Ламинат · обои'},
-    r3:  {walls:'deco', accent:'east', ceil:'white', short:'Ламинат · декоративка + стена обоями'},
+    r1:  {walls:'deco', backsplash:true, ceil:'paint', short:'Ламинат AN 908 · декоративка + фартук'},
+    r2:  {walls:'paper', ceil:'white', short:'Ламинат AN 908 · обои'},
+    r3:  {walls:'deco', accent:'east', ceil:'white', short:'Ламинат AN 908 · декоративка + стена обоями'},
     log1:{walls:null, ceil:'white', short:'Без отделки'},
-    liv: {walls:'deco', ceil:'white', short:'Ламинат · декоративка'},
+    liv: {walls:'deco', ceil:'white', short:'Ламинат AN 908 · декоративка'},
     log2:{walls:null, ceil:'white', short:'Без отделки'},
     bath:{walls:'tile', ceil:'paint', short:'Керамогранит · плитка'},
-    hall:{walls:'paper', ceil:'white', short:'Ламинат · обои'}
+    hall:{walls:'paper', ceil:'white', short:'Ламинат AN 908 · обои'}
   };
 
   const MM = 0.001;
@@ -518,35 +548,79 @@
     return t;
   }
 
-  function woodTexture(){
-    return canvasTexture(1024, (g,S)=>{
-      g.fillStyle = '#cbaa80'; g.fillRect(0,0,S,S);
-      const rows = 7, ph = S/rows;
-      for (let i=0;i<rows;i++){
-        const tint = (Math.random() - 0.5)*0.075;
-        g.fillStyle = tint > 0 ? `rgba(255,246,232,${tint})` : `rgba(92,66,40,${-tint})`;
-        g.fillRect(0,i*ph,S,ph-2);
-        for (let k=0;k<20;k++){
-          const y = i*ph + 6 + Math.random()*(ph-12);
-          const x0 = Math.random()*S*0.7;
-          g.strokeStyle = `rgba(100,68,38,${0.03 + Math.random()*0.035})`;
-          g.lineWidth = 0.8 + Math.random()*1.4;
+  // Ламинат Anatolia Design Honey (AN 908), 33 класс, 8 мм, планка 1290 × 190 мм.
+  // Раскладка «кирпичиком» (ряды со сдвигом в полпланки = 645 мм), торец к окну:
+  // длинная ось планок идёт перпендикулярно оконной стене, то есть вдоль z модели.
+  // UV пола в ExtrudeGeometry = метры мировой сцены (u → x, v → z), поэтому
+  // планки рисуем вертикально, а повтор текстуры задаём в мм на 1 м.
+  const LAM = { len:1290, wid:190, cols:4 };                    // 4 планки поперёк
+  LAM.tileU = LAM.wid * LAM.cols;                               // 760 мм по u
+  LAM.tileV = LAM.len * 2;                                      // 2580 мм по v
+  const hash01 = (a,b) => { const s = Math.sin(a*127.1 + b*311.7) * 43758.5453; return s - Math.floor(s); };
+
+  function laminateTexture(){
+    const S = 1024;
+    const c = document.createElement('canvas');
+    c.width = c.height = S;
+    const g = c.getContext('2d');
+    const pw = S / LAM.cols;                     // 190 мм -> 256 px
+    const ph = S / 2;                            // 1290 мм -> 512 px
+    g.fillStyle = '#cfa477'; g.fillRect(0,0,S,S);
+    for (let col=0; col<LAM.cols; col++){
+      const x0 = col*pw;
+      const shift = (col % 2) ? ph/2 : 0;        // кирпичный сдвиг 645 мм
+      for (let k=-1; k<=2; k++){
+        const y0 = k*ph + shift;
+        const p = ((k % 2) + 2) % 2;             // чётность ряда — шов текстуры бесшовный
+        const rA = hash01(col+1, p+3), rB = hash01(col+7, p+11);
+        g.fillStyle = `hsl(${31 + rA*4}, ${32 + rB*8}%, ${51 + rA*8}%)`;
+        g.fillRect(x0, y0, pw, ph);
+        // волокно вдоль планки
+        const lines = 9 + Math.round(rB*7);
+        for (let i=0;i<lines;i++){
+          const fx = hash01(col*13+i, p*7+1);
+          const gx = x0 + 3 + fx*(pw-6);
+          const amp = 1.5 + hash01(col+i, p+29)*3.5;
+          const dark = i % 3 === 0;
+          g.strokeStyle = dark
+            ? `rgba(122,86,46,${0.05 + hash01(col+i*3, p+5)*0.05})`
+            : `rgba(255,240,214,${0.05 + hash01(col+i*5, p+9)*0.05})`;
+          g.lineWidth = 0.9 + hash01(col+i*7, p+13)*2.1;
           g.beginPath();
-          g.moveTo(x0, y);
-          g.bezierCurveTo(x0+90, y-4+Math.random()*8, x0+230, y-4+Math.random()*8, x0+390, y);
+          g.moveTo(gx, y0 + 6);
+          g.bezierCurveTo(gx + amp, y0 + ph*0.34, gx - amp, y0 + ph*0.68, gx + amp*0.5, y0 + ph - 6);
           g.stroke();
         }
-        g.fillStyle = 'rgba(96,68,40,.17)';
-        g.fillRect(0, i*ph, S, 2.4);
-        const jx = (i % 2 ? S*0.37 : S*0.79);
-        g.fillRect(jx, i*ph, 2.2, ph);
+        // фаска 4V + лёгкий сатин поперёк планки
+        const sh = g.createLinearGradient(x0, 0, x0+pw, 0);
+        sh.addColorStop(0,'rgba(98,68,36,.17)');
+        sh.addColorStop(.07,'rgba(255,255,255,0)');
+        sh.addColorStop(.48,'rgba(255,243,222,.10)');
+        sh.addColorStop(.93,'rgba(255,255,255,0)');
+        sh.addColorStop(1,'rgba(98,68,36,.17)');
+        g.fillStyle = sh; g.fillRect(x0, y0, pw, ph);
+        // торцевой замок
+        g.fillStyle = 'rgba(90,60,30,.24)';
+        g.fillRect(x0, y0 - 1.1, pw, 2.2);
+        g.fillStyle = 'rgba(255,243,222,.13)';
+        g.fillRect(x0, y0 + 1.1, pw, 1.1);
       }
-      const grd = g.createLinearGradient(0,0,S,0);
-      grd.addColorStop(0,'rgba(255,244,226,.10)');
-      grd.addColorStop(.5,'rgba(255,255,255,0)');
-      grd.addColorStop(1,'rgba(74,46,22,.035)');
-      g.fillStyle = grd; g.fillRect(0,0,S,S);
-    }, 1/2.4);
+      // продольный шов планки
+      g.fillStyle = 'rgba(90,60,30,.20)';
+      g.fillRect(x0 - 1, 0, 2, S);
+    }
+    for (let i=0;i<800;i++){
+      g.fillStyle = Math.random() > .5
+        ? `rgba(255,244,222,${0.015 + Math.random()*0.035})`
+        : `rgba(88,54,24,${0.015 + Math.random()*0.035})`;
+      g.fillRect(Math.random()*S, Math.random()*S, 1 + Math.random()*3, 1 + Math.random()*2.4);
+    }
+    const t = new T.CanvasTexture(c);
+    t.wrapS = t.wrapT = T.RepeatWrapping;
+    t.encoding = T.sRGBEncoding;
+    t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    t.repeat.set(1000/LAM.tileU, 1000/LAM.tileV);
+    return t;
   }
 
   function porcelainTexture(){
@@ -717,7 +791,7 @@
 
   // ---------- scene ----------
   let wallMat, wallIntMat, trimMat, glassMat, frameMat, doorMat, metalMat, sillMat;
-  let porcelainMat, woodMat, concreteMat;
+  let porcelainMat, laminateMat, concreteMat;
   let decoMat, paperMat, accentMat, bathWallMat, splashMat, ceilWhiteMat, ceilPaintMat;
 
   function buildMaterials(){
@@ -731,7 +805,7 @@
     sillMat = new T.MeshStandardMaterial({color:0xe9e2d5, roughness:.55, metalness:0});
 
     porcelainMat = new T.MeshStandardMaterial({map:porcelainTexture(), roughness:.55, metalness:0});
-    woodMat = new T.MeshStandardMaterial({map:woodTexture(), roughness:.78, metalness:0});
+    laminateMat = new T.MeshStandardMaterial({map:laminateTexture(), roughness:.72, metalness:0});
     concreteMat = new T.MeshStandardMaterial({map:concreteTexture(), roughness:.92, metalness:0});
 
     decoMat = new T.MeshStandardMaterial({map:decoTexture(), roughness:.94, metalness:0});
@@ -810,7 +884,7 @@
   function buildFloors(){
     buildMaterials();
     ROOMS.forEach(r=>{
-      const base = r.floor === 'wood' ? woodMat : r.floor === 'porcelain' ? porcelainMat : concreteMat;
+      const base = r.floor === 'laminate' ? laminateMat : r.floor === 'porcelain' ? porcelainMat : concreteMat;
       const mat = base.clone();
       mat.side = T.DoubleSide;
       roomMats[r.id] = mat;
