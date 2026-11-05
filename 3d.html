@@ -280,7 +280,7 @@
   <div class="hud">
     <header class="topbar">
       <div class="brand">
-        <div class="kicker"><a href="index.html">← Все виды</a><span class="sep">·</span><span class="ctx">3D-модель по обмерному плану</span></div>
+        <div class="kicker"><a href="index.html">← Все виды</a><span class="sep">·</span><a href="layout.html">Раскладка ламината</a><span class="sep">·</span><span class="ctx">3D-модель по обмерному плану</span></div>
         <h1>Квартира Осипенко <span class="area">60,2 м²</span></h1>
         <p>2 комнаты, кухня, гостиная, 2 лоджии, санузел. <span class="opt">Высота стен 2,75 м, двери 2,05 м — приняты для 3D.</span></p>
       </div>
@@ -555,39 +555,43 @@
   // длинная ось планок идёт перпендикулярно оконной стене, то есть вдоль z модели.
   // UV пола в ExtrudeGeometry = метры мировой сцены (u → x, v → z), поэтому
   // планки рисуем вертикально, а повтор текстуры задаём в мм на 1 м.
-  const LAM = { len:1290, wid:190, cols:4 };                    // 4 планки поперёк
-  LAM.tileU = LAM.wid * LAM.cols;                               // 760 мм по u
-  LAM.tileV = LAM.len * 2;                                      // 2580 мм по v
+  const LAM = { len:1290, wid:190, cols:6, rows:4 };             // 6 планок поперёк × 4 длины
+  LAM.tileU = LAM.wid * LAM.cols;                               // 1140 мм по u
+  LAM.tileV = LAM.len * LAM.rows;                               // 5160 мм по v (rows чётное → сдвиг бесшовный)
   const hash01 = (a,b) => { const s = Math.sin(a*127.1 + b*311.7) * 43758.5453; return s - Math.floor(s); };
 
   function laminateTexture(){
-    const S = 1024;
+    const W = 1024, H = 2048;
     const c = document.createElement('canvas');
-    c.width = c.height = S;
+    c.width = W; c.height = H;
     const g = c.getContext('2d');
-    const pw = S / LAM.cols;                     // 190 мм -> 256 px
-    const ph = S / 2;                            // 1290 мм -> 512 px
-    g.fillStyle = '#cfa477'; g.fillRect(0,0,S,S);
+    const pw = W / LAM.cols;                     // 190 мм -> ~171 px
+    const ph = H / LAM.rows;                     // 1290 мм -> 512 px
+    g.fillStyle = '#c9a173'; g.fillRect(0,0,W,H);
     for (let col=0; col<LAM.cols; col++){
       const x0 = col*pw;
-      const shift = (col % 2) ? ph/2 : 0;        // кирпичный сдвиг 645 мм
-      for (let k=-1; k<=2; k++){
+      const shift = (col % 2) ? ph/2 : 0;        // «кирпичик»: соседний ряд со сдвигом 645 мм
+      for (let k=-1; k<=LAM.rows; k++){
         const y0 = k*ph + shift;
-        const p = ((k % 2) + 2) % 2;             // чётность ряда — шов текстуры бесшовный
-        const rA = hash01(col+1, p+3), rB = hash01(col+7, p+11);
-        g.fillStyle = `hsl(${31 + rA*4}, ${32 + rB*8}%, ${51 + rA*8}%)`;
+        // оттенок привязан к слоту (k mod rows), а не к rand: планки, переехавшие
+        // через шов тайла, получают тот же тон и то же волокно с обеих сторон
+        const slot = ((k % LAM.rows) + LAM.rows) % LAM.rows;
+        const rA = hash01(col*3+1,  slot*7+3);
+        const rB = hash01(col*5+7,  slot*11+13);
+        const rC = hash01(col*11+21, slot*17+5);
+        g.fillStyle = `hsl(${30 + rA*5}, ${31 + rB*9}%, ${49 + rC*9}%)`;
         g.fillRect(x0, y0, pw, ph);
         // волокно вдоль планки
-        const lines = 9 + Math.round(rB*7);
+        const lines = 10 + Math.round(rB*8);
         for (let i=0;i<lines;i++){
-          const fx = hash01(col*13+i, p*7+1);
+          const fx = hash01(col*13+i, slot*7+1);
           const gx = x0 + 3 + fx*(pw-6);
-          const amp = 1.5 + hash01(col+i, p+29)*3.5;
+          const amp = 1.5 + hash01(col+i, slot*29+2)*3.5;
           const dark = i % 3 === 0;
           g.strokeStyle = dark
-            ? `rgba(122,86,46,${0.05 + hash01(col+i*3, p+5)*0.05})`
-            : `rgba(255,240,214,${0.05 + hash01(col+i*5, p+9)*0.05})`;
-          g.lineWidth = 0.9 + hash01(col+i*7, p+13)*2.1;
+            ? `rgba(118,82,42,${0.06 + hash01(col+i*3, slot*5+5)*0.06})`
+            : `rgba(255,241,216,${0.05 + hash01(col+i*5, slot*9+9)*0.05})`;
+          g.lineWidth = 0.9 + hash01(col+i*7, slot*13+13)*2.1;
           g.beginPath();
           g.moveTo(gx, y0 + 6);
           g.bezierCurveTo(gx + amp, y0 + ph*0.34, gx - amp, y0 + ph*0.68, gx + amp*0.5, y0 + ph - 6);
@@ -595,27 +599,27 @@
         }
         // фаска 4V + лёгкий сатин поперёк планки
         const sh = g.createLinearGradient(x0, 0, x0+pw, 0);
-        sh.addColorStop(0,'rgba(98,68,36,.17)');
+        sh.addColorStop(0,'rgba(92,62,32,.20)');
         sh.addColorStop(.07,'rgba(255,255,255,0)');
-        sh.addColorStop(.48,'rgba(255,243,222,.10)');
+        sh.addColorStop(.48,'rgba(255,244,224,.10)');
         sh.addColorStop(.93,'rgba(255,255,255,0)');
-        sh.addColorStop(1,'rgba(98,68,36,.17)');
+        sh.addColorStop(1,'rgba(92,62,32,.20)');
         g.fillStyle = sh; g.fillRect(x0, y0, pw, ph);
-        // торцевой замок
-        g.fillStyle = 'rgba(90,60,30,.24)';
-        g.fillRect(x0, y0 - 1.1, pw, 2.2);
-        g.fillStyle = 'rgba(255,243,222,.13)';
-        g.fillRect(x0, y0 + 1.1, pw, 1.1);
+        // торцевой замок (шов между планками одного ряда)
+        g.fillStyle = 'rgba(78,50,24,.40)';
+        g.fillRect(x0, y0 - 0.9, pw, 1.8);
+        g.fillStyle = 'rgba(255,246,228,.16)';
+        g.fillRect(x0, y0 + 0.9, pw, 1.0);
       }
-      // продольный шов планки
-      g.fillStyle = 'rgba(90,60,30,.20)';
-      g.fillRect(x0 - 1, 0, 2, S);
+      // продольный шов между планками
+      g.fillStyle = 'rgba(78,50,24,.34)';
+      g.fillRect(x0 - 0.9, 0, 1.8, H);
     }
-    for (let i=0;i<800;i++){
+    for (let i=0;i<1200;i++){
       g.fillStyle = Math.random() > .5
         ? `rgba(255,244,222,${0.015 + Math.random()*0.035})`
         : `rgba(88,54,24,${0.015 + Math.random()*0.035})`;
-      g.fillRect(Math.random()*S, Math.random()*S, 1 + Math.random()*3, 1 + Math.random()*2.4);
+      g.fillRect(Math.random()*W, Math.random()*H, 1 + Math.random()*3, 1 + Math.random()*2.4);
     }
     const t = new T.CanvasTexture(c);
     t.wrapS = t.wrapT = T.RepeatWrapping;
